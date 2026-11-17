@@ -1,0 +1,385 @@
+/* LAST WORD — HUD styling. Dark arena chrome, bright word chips, big
+   readable banners. The canvas draws the game world; this file dresses
+   everything around it. */
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #07090f;
+  color: #e8ecf4;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  height: 100%;
+}
+
+#wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+}
+
+#stage {
+  position: relative;
+  width: min(1280px, 98vw);
+  aspect-ratio: 16 / 9;
+  background: #0d1117;
+  border: 1px solid #2a3550;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.6);
+}
+
+canvas#game {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.hidden { display: none !important; }
+
+/* --- Top bar ----------------------------------------------------------- */
+#topbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px;
+  background: linear-gradient(180deg, rgba(7, 10, 18, 0.92), rgba(7, 10, 18, 0.55));
+  border-bottom: 1px solid rgba(140, 170, 255, 0.18);
+  z-index: 5;
+}
+
+#roundLabel {
+  font-weight: 800;
+  font-size: 20px;
+  letter-spacing: 2px;
+  color: #ffd94d;
+}
+
+#aliveLabel, #timerLabel {
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 1px;
+}
+
+#aliveLabel { color: #7df3ff; margin-right: 18px; }
+#timerLabel { color: #f8fafc; font-variant-numeric: tabular-nums; }
+
+#hpWrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#hpText { font-weight: 700; font-size: 14px; min-width: 52px; text-align: right; }
+
+#hpTrack {
+  width: 170px;
+  height: 14px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+#hpBar {
+  height: 100%;
+  width: 100%;
+  background: #4ade80;
+  border-radius: 8px;
+  transition: width 0.2s ease;
+}
+
+/* --- Grimoire (known words) -------------------------------------------- */
+#grimoire {
+  position: absolute;
+  left: 12px;
+  top: 68px;
+  width: 172px;
+  padding: 10px 12px;
+  background: rgba(7, 10, 18, 0.72);
+  border: 1px solid rgba(140, 170, 255, 0.22);
+  border-radius: 8px;
+  z-index: 5;
+}
+
+#grimoire h3 {
+  margin: 0 0 8px 0;
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: #c7d2fe;
+}
+
+#wordList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.word-chip {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 3px 7px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.word-chip.tier-basic { color: #a5f3fc; border-color: rgba(165, 243, 252, 0.4); }
+.word-chip.tier-unlock { color: #fde68a; border-color: rgba(253, 230, 138, 0.4); }
+.word-chip.tier-strong { color: #fca5a5; border-color: rgba(252, 165, 165, 0.45); }
+
+.word-count {
+  width: 100%;
+  margin-top: 7px;
+  font-size: 11px;
+  color: rgba(232, 236, 244, 0.6);
+}
+
+/* --- Kill feed --------------------------------------------------------- */
+#feed {
+  position: absolute;
+  right: 12px;
+  top: 68px;
+  width: 300px;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.feed-item {
+  margin-bottom: 5px;
+  padding: 6px 10px;
+  font-size: 13px;
+  background: rgba(7, 10, 18, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-left: 3px solid #64748b;
+  border-radius: 6px;
+  animation: feedIn 0.25s ease;
+}
+
+.feed-item.death { border-left-color: #f87171; }
+.feed-item.cast { border-left-color: #c084fc; }
+.feed-item.learn { border-left-color: #ffd94d; }
+.feed-item.round { border-left-color: #38bdf8; font-weight: 700; }
+.feed-item.warn { border-left-color: #fb923c; color: #fed7aa; }
+
+@keyframes feedIn {
+  from { opacity: 0; transform: translateX(12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* --- Round banner ------------------------------------------------------ */
+#banner {
+  position: absolute;
+  left: 50%;
+  top: 34%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 8;
+  pointer-events: none;
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.9);
+}
+
+#banner.pop { animation: bannerPop 0.45s cubic-bezier(0.2, 1.6, 0.4, 1); }
+
+@keyframes bannerPop {
+  from { transform: translate(-50%, -50%) scale(0.7); opacity: 0; }
+  to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+#bannerTitle {
+  font-size: 52px;
+  font-weight: 900;
+  letter-spacing: 6px;
+  color: #fff;
+}
+
+#bannerSub {
+  font-size: 20px;
+  font-weight: 600;
+  color: #ffd94d;
+  margin-top: 4px;
+}
+
+/* --- Cast box ---------------------------------------------------------- */
+#castbox {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(20, 12, 40, 0.92);
+  border: 2px solid #c084fc;
+  border-radius: 12px;
+  box-shadow: 0 0 34px rgba(192, 132, 252, 0.45);
+  z-index: 9;
+}
+
+#castLabel {
+  font-weight: 800;
+  font-size: 15px;
+  color: #e9d5ff;
+  white-space: nowrap;
+}
+
+#wordInput {
+  width: 200px;
+  padding: 9px 12px;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  outline: none;
+}
+
+#wordInput:focus { border-color: #e9d5ff; }
+
+#castTimer {
+  font-size: 22px;
+  font-weight: 900;
+  color: #ffd94d;
+  min-width: 38px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Spectate chip ----------------------------------------------------- */
+#spectateChip {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  padding: 10px 18px;
+  background: rgba(7, 10, 18, 0.85);
+  border: 1px solid rgba(248, 113, 113, 0.5);
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 15px;
+  color: #fca5a5;
+  z-index: 9;
+}
+
+/* --- Start / end overlays ---------------------------------------------- */
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(5, 7, 13, 0.78);
+  backdrop-filter: blur(3px);
+  z-index: 20;
+  text-align: center;
+  padding: 24px;
+}
+
+.overlay h1 {
+  margin: 0;
+  font-size: 72px;
+  font-weight: 900;
+  letter-spacing: 10px;
+  color: #fff;
+  text-shadow: 0 0 40px rgba(192, 132, 252, 0.65);
+}
+
+.tagline {
+  margin: 6px 0 18px 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #e9d5ff;
+  letter-spacing: 1px;
+}
+
+.howto {
+  max-width: 640px;
+  font-size: 15px;
+  line-height: 1.55;
+  color: rgba(232, 236, 244, 0.88);
+  margin: 0 0 14px 0;
+}
+
+.howto b { color: #ffd94d; }
+
+.controls {
+  font-size: 14px;
+  color: rgba(232, 236, 244, 0.75);
+  margin-bottom: 16px;
+}
+
+.controls b { color: #7df3ff; }
+
+#wordPreview {
+  max-width: 680px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: rgba(232, 236, 244, 0.55);
+  margin-bottom: 20px;
+  line-height: 1.8;
+}
+
+.big-btn {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  color: #1a0b2e;
+  background: linear-gradient(180deg, #e9d5ff, #c084fc);
+  border: none;
+  border-radius: 12px;
+  padding: 16px 44px;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(192, 132, 252, 0.4);
+}
+
+.big-btn:hover { filter: brightness(1.08); }
+.big-btn:active { transform: translateY(1px); }
+
+#endTitle {
+  font-size: 64px;
+  font-weight: 900;
+  letter-spacing: 6px;
+  margin: 0;
+}
+
+#endTitle.win { color: #4ade80; text-shadow: 0 0 40px rgba(74, 222, 128, 0.5); }
+#endTitle.lose { color: #f87171; text-shadow: 0 0 40px rgba(248, 113, 113, 0.4); }
+
+#endSub {
+  font-size: 19px;
+  color: rgba(232, 236, 244, 0.85);
+  margin: 10px 0 22px 0;
+}
+
+#endStats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 42px;
+  margin-bottom: 26px;
+  text-align: left;
+}
+
+.stat {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  font-size: 16px;
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat span { color: rgba(232, 236, 244, 0.7); }
+.stat b { color: #fff; }

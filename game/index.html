@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LAST WORD — Type It, Survive It</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="src/style.css">
+</head>
+<body>
+<div id="wrap">
+  <div id="stage">
+    <canvas id="game" width="1280" height="720"></canvas>
+
+    <div id="topbar" class="hidden">
+      <div id="roundLabel">ROUND 1</div>
+      <div><span id="aliveLabel">20 ALIVE</span><span id="timerLabel">20s</span></div>
+      <div id="hpWrap">
+        <span id="hpText">HP 100</span>
+        <div id="hpTrack"><div id="hpBar"></div></div>
+      </div>
+    </div>
+
+    <div id="grimoire" class="hidden">
+      <h3>GRIMOIRE</h3>
+      <div id="wordList"></div>
+    </div>
+
+    <div id="feed" class="hidden"><div id="feedList"></div></div>
+
+    <div id="banner" class="hidden">
+      <div id="bannerTitle"></div>
+      <div id="bannerSub"></div>
+    </div>
+
+    <div id="castbox" class="hidden">
+      <span id="castLabel">YOU ARE THE WORDSMITH — type a word!</span>
+      <input id="wordInput" type="text" maxlength="12" placeholder="type a word…" autocomplete="off" spellcheck="false">
+      <span id="castTimer">10s</span>
+    </div>
+
+    <div id="spectateChip" class="hidden"><span id="spectateText"></span></div>
+
+    <div id="startScreen" class="overlay">
+      <h1>LAST WORD</h1>
+      <p class="tagline">Type it. Survive it.</p>
+      <p class="howto">
+        Twenty players, one arena, last one standing wins. Every round a random
+        player becomes the <b>Wordsmith</b> and types a word — <b>METEOR</b>,
+        <b>FLOOD</b>, <b>ZOMBIES</b> — and the word becomes real as a hazard
+        that hits <b>everyone</b>, caster included. Learn stronger words by
+        surviving or grabbing glowing scrolls. And mind the zone: outside it,
+        you burn.
+      </p>
+      <p class="controls"><b>WASD / Arrows</b> move &nbsp;·&nbsp; <b>Space</b> dash &nbsp;·&nbsp; <b>Type + Enter</b> cast your word &nbsp;·&nbsp; <b>R</b> restart</p>
+      <div id="wordPreview"></div>
+      <button id="startBtn" class="big-btn">▶ &nbsp;START</button>
+    </div>
+
+    <div id="endScreen" class="overlay hidden">
+      <h2 id="endTitle"></h2>
+      <p id="endSub"></p>
+      <div id="endStats"></div>
+      <button id="restartBtn" class="big-btn">↻ &nbsp;PLAY AGAIN</button>
+    </div>
+  </div>
+</div>
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
