@@ -4,6 +4,7 @@
 // file draws everything around it.
 
 import { WORDS } from './words.js';
+import { drawCastRow } from './render.js';
 
 export class UI {
   constructor(doc) {
@@ -13,7 +14,7 @@ export class UI {
       'grimoire', 'wordList', 'feed', 'feedList', 'banner', 'bannerTitle', 'bannerSub',
       'castbox', 'castLabel', 'wordInput', 'castTimer', 'spectateChip', 'spectateText',
       'startScreen', 'startBtn', 'endScreen', 'endTitle', 'endSub', 'endStats', 'restartBtn',
-      'wordPreview'];
+      'wordPreview', 'castCanvas'];
     for (const id of ids) this.el[id] = doc.getElementById(id);
     this.bannerTimer = null;
     this.game = null;
@@ -43,6 +44,10 @@ export class UI {
     this.el.feed.classList.add('hidden');
     this.el.castbox.classList.add('hidden');
     this.el.spectateChip.classList.add('hidden');
+    // Paint the cast portraits on the start screen.
+    if (this.el.castCanvas && this.game && this.game.players.length) {
+      drawCastRow(this.el.castCanvas, this.game.players);
+    }
   }
 
   showPlaying() {

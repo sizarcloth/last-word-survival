@@ -328,8 +328,19 @@ canvas#game {
   font-size: 12px;
   letter-spacing: 1px;
   color: rgba(232, 236, 244, 0.55);
-  margin-bottom: 20px;
+  margin-bottom: 14px;
   line-height: 1.8;
+}
+
+#castHeading {
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: rgba(232, 236, 244, 0.5);
+  margin-bottom: 6px;
+}
+
+#castCanvas {
+  margin-bottom: 18px;
 }
 
 .big-btn {

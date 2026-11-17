@@ -164,6 +164,9 @@ function damageInside(game, h, radius, amount, perSecond) {
 }
 
 export function updateHazards(game, dt) {
+  // Prune faded decals (visual only).
+  game.decals = game.decals.filter((d) => game.time - d.born < d.dur);
+  if (game.decals.length > 40) game.decals.splice(0, game.decals.length - 40);
   for (const h of game.hazards) {
     if (h.t < 0) { h.t += dt; continue; }
     h.t += dt;
@@ -174,6 +177,7 @@ export function updateHazards(game, dt) {
           game.shake(7);
           game.burst(h.x, h.y, '#ff9a3d', 26);
           game.burst(h.x, h.y, '#5a4a3a', 14);
+          game.decals.push({ kind: 'crater', x: h.x, y: h.y, r: h.r, born: game.time, dur: 3.5 });
           damageInside(game, h, h.r, h.word.damage, false);
         }
         break;
@@ -183,6 +187,7 @@ export function updateHazards(game, dt) {
         if (h.t >= h.dur) {
           h.dead = true;
           game.burst(h.x, h.y, '#ffe14d', 18);
+          game.decals.push({ kind: 'scorch', x: h.x, y: h.y, r: h.r, born: game.time, dur: 3 });
           damageInside(game, h, h.r, h.word.damage, false);
         }
         break;

@@ -41,6 +41,7 @@ export class Game {
     this.particles = [];
     this.floaters = [];
     this.scrolls = [];
+    this.decals = []; // visual only: craters and scorch marks on the ground
     this.zone = { cx: this.arena.x + this.arena.w / 2, cy: this.arena.y + this.arena.h / 2, r: ZONE_START_R, targetR: ZONE_START_R };
     this.round = 0;
     this.roundLen = this.fast ? 6 : 20;
