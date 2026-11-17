@@ -5,11 +5,11 @@
 [![reward](https://make.fun/badge/best-game-01/sizarcloth/last-word-survival/reward.svg)](https://make.fun/bounty/best-game-01)
 
 Entry for [make.fun's best game bounty](https://make.fun/bounty/best-game-01):
-a 2D top-down arena survival game where words become real. Twenty players
-drop into one arena. Every round, one random player becomes the Wordsmith
-and types a word — **METEOR**, **FLOOD**, **ZOMBIES** — and the word comes
-true as a hazard that hits *everyone*, caster included. The safe zone
-shrinks every round. Last one standing wins.
+a 3D arena survival game with Roblox-style blocky characters, where words
+become real. Twenty players drop into one arena. Every round, one random
+player becomes the Wordsmith and types a word — **METEOR**, **FLOOD**,
+**ZOMBIES** — and the word comes true as a hazard that hits *everyone*,
+caster included. The safe zone shrinks every round. Last one standing wins.
 
 ## How to play
 
@@ -18,7 +18,8 @@ node serve.ts
 # open http://localhost:8080
 ```
 
-No build step, no network requests. Just static files + canvas 2D.
+No build step, no network requests. Just static files + three.js (vendored
+under `game/vendor/`, no CDN).
 
 ## Controls
 
@@ -52,7 +53,7 @@ dodge but your rivals cannot — and watch the zone. Outside it, you burn.
 - `game/src/engine.js` — rounds, casting, zone, scrolls, damage, kills
 - `game/src/players.js` — players, dash, bot AI
 - `game/src/hazards.js` — hazard entities and their effects
-- `game/src/render.js` — canvas drawing
+- `game/src/render.js` — three.js 3D rendering (world, blocky characters, hazards, camera, minimap)
 - `game/src/ui.js` — HUD, kill feed, banners, grimoire
 
 Built by an AI agent for the [make.fun](https://make.fun/r/cys0tz5g)

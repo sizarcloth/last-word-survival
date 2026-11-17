@@ -4,7 +4,7 @@
 // when it is ready to screenshot. window.__game exposes the match for tests.
 
 import { Game, mulberry32 } from './engine.js';
-import { drawGame } from './render.js';
+import { createRenderer } from './render.js';
 import { UI } from './ui.js';
 import { matchWord, wordById } from './words.js';
 import { makePlayers } from './players.js';
@@ -14,11 +14,18 @@ const params = new URLSearchParams(window.location.search);
 const FAST = params.get('fast') === '1';
 const SHOT = params.get('shot') || '';
 const SEED = Number(params.get('seed')) || 7;
+const NOGL = params.get('nogl') === '1';
 
 const canvas = document.getElementById('game');
-const ctx = canvas.getContext('2d');
-
 const ui = new UI(document);
+const renderer3d = createRenderer(canvas, {
+  onEliminate: (p) => ui.eliminate(p.name),
+  // Debug flag for automated tests: skip the WebGL draw call (software
+  // rendering is too slow to run the sim in real time) while keeping all
+  // scene sync, camera, name tags and the minimap running.
+  noGL: NOGL,
+});
+window.__renderer = renderer3d;
 
 const hooks = {
   onBanner: (t, s) => ui.banner(t, s),
@@ -155,6 +162,7 @@ function setupShot() {
     // Guarantee a meteor storm is mid-flight for the shot.
     const caster = game.alivePlayers().find((p) => !p.isHuman) || game.human;
     spawnWordHazard(game, wordById('meteor'), caster);
+    game.lastCast = { word: wordById('meteor'), caster, at: game.time };
     game.hooks.onBanner('METEOR', `cast by ${caster.name}`);
     step(0.45);
     window.__shotReady = true;
@@ -198,16 +206,32 @@ function setupShot() {
 
 // --- Main loop -------------------------------------------------------------
 let last = performance.now();
-function frame(now) {
-  const dt = Math.min(0.05, (now - last) / 1000);
-  last = now;
+
+// One frame of game logic + rendering, as a named function so the automated
+// playtest can drive the sim deterministically: headless Chromium's rAF is
+// unreliable in this environment (frames stall when the page produces no
+// invalidation), so the test calls window.__step(1/30) in a loop instead of
+// waiting on wall-clock time. Real browsers just use rAF below.
+function stepFrame(dt, renderIt = true) {
   if (game.state === 'playing') {
     const mv = readMoveInput();
     game.setHumanInput(mv.x, mv.y);
     game.update(dt);
     ui.updateHUD();
   }
-  drawGame(ctx, game);
+  if (renderIt) renderer3d.render(game, dt);
+}
+window.__step = stepFrame;
+
+function frame(now) {
+  // Clamp dt to [0, 0.05]: rAF timestamps can jump backwards in headless /
+  // throttled environments (a stale first-frame timestamp), and a negative
+  // dt would ADD time to every engine timer (shields, flashes, effects) via
+  // the Math.max(0, t - dt) decays — in the playtest it lit every player's
+  // shield bubble at once.
+  const dt = Math.min(0.05, Math.max(0, (now - last) / 1000));
+  last = now;
+  stepFrame(dt, true);
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);

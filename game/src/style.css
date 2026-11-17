@@ -394,3 +394,112 @@ canvas#game {
 
 .stat span { color: rgba(232, 236, 244, 0.7); }
 .stat b { color: #fff; }
+
+/* --- 3D overlays: name tags, floaters, flash, vignette, minimap --------- */
+#nametags, #floaters {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.tag {
+  position: absolute;
+  left: 0;
+  top: 0;
+  margin-left: -30px;
+  margin-top: -34px;
+  width: 60px;
+  text-align: center;
+  pointer-events: none;
+}
+
+.tag-name {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+  letter-spacing: 0.5px;
+}
+
+.tag-human .tag-name { color: #7df3ff; font-size: 12px; }
+
+.tag-hp {
+  width: 34px;
+  height: 4px;
+  margin: 2px auto 0 auto;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.tag-hp-fill {
+  height: 100%;
+  width: 100%;
+  background: #4ade80;
+}
+
+.floater {
+  position: absolute;
+  left: 0;
+  top: 0;
+  margin-left: -30px;
+  width: 60px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 900;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
+  pointer-events: none;
+}
+
+#flash {
+  position: absolute;
+  inset: 0;
+  background: #fff4be;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 6;
+}
+
+#zoneVignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(255, 0, 0, 0) 55%, rgba(255, 30, 30, 0.55) 100%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 6;
+}
+
+#minimap {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  width: 184px;
+  height: 108px;
+  border: 1px solid rgba(140, 170, 255, 0.35);
+  border-radius: 8px;
+  z-index: 5;
+  pointer-events: none;
+}
+
+#elimToast {
+  position: absolute;
+  left: 50%;
+  top: 68px;
+  transform: translateX(-50%);
+  padding: 8px 18px;
+  background: rgba(20, 8, 8, 0.88);
+  border: 1px solid rgba(248, 113, 113, 0.6);
+  border-radius: 10px;
+  font-weight: 900;
+  font-size: 17px;
+  letter-spacing: 1px;
+  color: #fca5a5;
+  z-index: 8;
+  pointer-events: none;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+}
+
+#elimToast.pop { animation: bannerPop 0.35s cubic-bezier(0.2, 1.6, 0.4, 1); }

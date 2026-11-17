@@ -14,9 +14,10 @@ export class UI {
       'grimoire', 'wordList', 'feed', 'feedList', 'banner', 'bannerTitle', 'bannerSub',
       'castbox', 'castLabel', 'wordInput', 'castTimer', 'spectateChip', 'spectateText',
       'startScreen', 'startBtn', 'endScreen', 'endTitle', 'endSub', 'endStats', 'restartBtn',
-      'wordPreview', 'castCanvas'];
+      'wordPreview', 'castCanvas', 'elimToast'];
     for (const id of ids) this.el[id] = doc.getElementById(id);
     this.bannerTimer = null;
+    this.elimTimer = null;
     this.game = null;
     // Fill the start screen's word preview.
     if (this.el.wordPreview) {
@@ -107,6 +108,19 @@ export class UI {
 
   clearFeed() {
     this.el.feedList.innerHTML = '';
+  }
+
+  // Elimination announcement: a quick toast when anyone bursts into blocks.
+  eliminate(name) {
+    const t = this.el.elimToast;
+    if (!t) return;
+    t.textContent = `💥 ${name} ELIMINATED`;
+    t.classList.remove('hidden');
+    t.classList.remove('pop');
+    void t.offsetWidth; // restart the pop animation
+    t.classList.add('pop');
+    if (this.elimTimer) clearTimeout(this.elimTimer);
+    this.elimTimer = setTimeout(() => t.classList.add('hidden'), 1600);
   }
 
   banner(title, sub = '') {
